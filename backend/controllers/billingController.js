@@ -1,125 +1,111 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-// Get all products (for search/barcode scan)
-export const getShopProducts = async (req, res) => {
-    try {
-        const products = await prisma.product.findMany({
-            where: { isAvailable: true }
-        });
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+// Generate a unique bill number like LB/2026/00042
+const generateBillNumber = async () => {
+    const year = new Date().getFullYear();
+    const count = await prisma.bill.count();
+    const seq = String(count + 1).padStart(5, '0');
+    return `LB/${year}/${seq}`;
 };
 
-// Create a new store bill
+// POST /api/billing — Save a new bill
 export const createBill = async (req, res) => {
     try {
-        const {
-            customerName,
-            customerPhone,
-            customerGst,
-            items,
-            subtotal,
-            discount,
-            totalGst,
-            grandTotal,
-            paymentMethod
-        } = req.body;
+        const { customerName, customerPhone, items, subtotal, discountAmt, gstAmt, grandTotal, gstRate, notes } = req.body;
+        const billNumber = await generateBillNumber();
 
-        // Generate invoice number: LB-YYYYMMDD-XXXX
-        const now = new Date();
-        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-
-        // Find count of bills today for increment
-        const startOfToday = new Date(now.setHours(0, 0, 0, 0));
-        const todayCount = await prisma.storeBill.count({
-            where: {
-                createdAt: {
-                    gte: startOfToday
-                }
-            }
-        });
-
-        const invoiceNumber = `LB-${dateStr}-${(todayCount + 1).toString().padStart(4, '0')}`;
-
-        const bill = await prisma.storeBill.create({
+        const bill = await prisma.bill.create({
             data: {
-                invoiceNumber,
-                customerName,
-                customerPhone,
-                customerGst,
-                subtotal,
-                discount,
-                totalGst,
-                grandTotal,
-                paymentMethod,
-                items
-            }
-        });
-
-        res.status(201).json(bill);
-    } catch (error) {
-        console.error('Create Bill Error:', error);
-        res.status(500).json({ message: 'Failed to save bill: ' + error.message });
-    }
-};
-
-// Get daily report
-export const getDailyReport = async (req, res) => {
-    try {
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const bills = await prisma.storeBill.findMany({
-            where: {
-                createdAt: {
-                    gte: startOfDay
-                }
+                billNumber,
+                customerName: customerName || null,
+                customerPhone: customerPhone || null,
+                items,
+                subtotal: parseFloat(subtotal),
+                discountAmt: parseFloat(discountAmt || 0),
+                gstAmt: parseFloat(gstAmt),
+                grandTotal: parseFloat(grandTotal),
+                gstRate: parseFloat(gstRate || 18),
+                notes: notes || null,
             },
-            orderBy: {
-                createdAt: 'desc'
-            }
         });
 
-        const summary = bills.reduce((acc, bill) => {
-            acc.totalSales += bill.grandTotal;
-            acc.totalGst += bill.totalGst;
-            acc.billCount += 1;
-            return acc;
-        }, { totalSales: 0, totalGst: 0, billCount: 0 });
-
-        res.status(200).json({
-            summary,
-            bills
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(201).json({ success: true, bill });
+    } catch (err) {
+        console.error('createBill error:', err);
+        res.status(500).json({ message: 'Failed to save bill.' });
     }
 };
 
-// Seed mock products for testing barcode scanning
-export const seedProducts = async (req, res) => {
-    const mockProducts = [
-        { name: 'Red Velvet Cake', barcode: '890123456789', price: 550, category: 'cake', gst: 18, isAvailable: true },
-        { name: 'Chocolate Truffle Cake', barcode: '890123456790', price: 650, category: 'cake', gst: 18, isAvailable: true },
-        { name: 'Butter Croissant', barcode: '890123456791', price: 80, category: 'snack', gst: 5, isAvailable: true },
-        { name: 'Chocolate Chip Cookie', barcode: '890123456792', price: 25, category: 'cookie', gst: 5, isAvailable: true },
-        { name: 'Blueberry Muffin', barcode: '890123456793', price: 75, category: 'pastry', gst: 12, isAvailable: true },
-        { name: 'Cappuccino', barcode: '890123456794', price: 120, category: 'beverage', gst: 18, isAvailable: true },
-    ];
-
+// GET /api/billing — List bills (filter by date/customer)
+export const getBills = async (req, res) => {
     try {
-        for (const p of mockProducts) {
-            await prisma.product.upsert({
-                where: { barcode: p.barcode },
-                update: p,
-                create: p
-            });
+        const { customer, date, limit = 50, skip = 0 } = req.query;
+
+        const where = {};
+        if (customer) {
+            where.OR = [
+                { customerName: { contains: customer, mode: 'insensitive' } },
+                { customerPhone: { contains: customer } },
+            ];
         }
-        res.status(200).json({ message: 'Mock products seeded successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (date) {
+            const start = new Date(date);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(date);
+            end.setHours(23, 59, 59, 999);
+            where.createdAt = { gte: start, lte: end };
+        }
+
+        const [bills, total] = await Promise.all([
+            prisma.bill.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take: parseInt(limit),
+                skip: parseInt(skip),
+            }),
+            prisma.bill.count({ where }),
+        ]);
+
+        res.json({ success: true, bills, total });
+    } catch (err) {
+        console.error('getBills error:', err);
+        res.status(500).json({ message: 'Failed to fetch bills.' });
+    }
+};
+
+// GET /api/billing/:id — Single bill for reprint
+export const getBillById = async (req, res) => {
+    try {
+        const bill = await prisma.bill.findUnique({ where: { id: req.params.id } });
+        if (!bill) return res.status(404).json({ message: 'Bill not found.' });
+        res.json({ success: true, bill });
+    } catch (err) {
+        console.error('getBillById error:', err);
+        res.status(500).json({ message: 'Failed to fetch bill.' });
+    }
+};
+
+// GET /api/billing/summary/today — Daily summary stats
+export const getDailySummary = async (req, res) => {
+    try {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const bills = await prisma.bill.findMany({
+            where: { createdAt: { gte: start, lte: end } },
+        });
+
+        const totalBills = bills.length;
+        const totalRevenue = bills.reduce((s, b) => s + b.grandTotal, 0);
+        const totalGST = bills.reduce((s, b) => s + b.gstAmt, 0);
+        const totalDiscount = bills.reduce((s, b) => s + b.discountAmt, 0);
+
+        res.json({ success: true, totalBills, totalRevenue, totalGST, totalDiscount });
+    } catch (err) {
+        console.error('getDailySummary error:', err);
+        res.status(500).json({ message: 'Failed to fetch daily summary.' });
     }
 };

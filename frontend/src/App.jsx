@@ -24,7 +24,8 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminProductDetails from './pages/admin/AdminProductDetails';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
-import Billing from './pages/admin/Billing';
+import AdminBilling from './pages/admin/AdminBilling';
+import AdminBillHistory from './pages/admin/AdminBillHistory';
 import Contact from './pages/Contact';
 
 function App() {
@@ -61,8 +62,9 @@ function App() {
                   <Route path="products/edit/:id" element={<AdminProductDetails />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="users" element={<AdminUsers />} />
-                  <Route path="billing" element={<Billing />} />
                   <Route path="settings" element={<AdminSettings />} />
+                  <Route path="billing" element={<AdminBilling />} />
+                  <Route path="billing/history" element={<AdminBillHistory />} />
                 </Route>
 
                 <Route path="*" element={

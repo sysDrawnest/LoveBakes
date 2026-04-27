@@ -53,4 +53,10 @@ export const sendMessageApi = (data) => api.post('/contact', data);
 export const createRazorpayOrderApi = (data) => api.post('/payment/create-order', data);
 export const verifyPaymentApi = (data) => api.post('/payment/verify', data);
 
+// Billing (In-Store)
+export const createBillApi = (data) => api.post('/billing', data);
+export const getBillsApi = (params) => api.get('/billing', { params });
+export const getBillByIdApi = (id) => api.get(`/billing/${id}`);
+export const getDailySummaryApi = () => api.get('/billing/summary/today');
+
 export default api;

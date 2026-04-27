@@ -32,9 +32,6 @@ model Product {
   sizes       Json?    // [{ size: "500g", price: 500 }]
   flavors     String[]
   isAvailable Boolean  @default(true)
-  barcode     String?  @unique
-  price       Float?
-  gst         Int      @default(5)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -107,17 +104,17 @@ model Review {
   updatedAt DateTime @updatedAt
 }
 
-model StoreBill {
-  id             String   @id @default(uuid())
-  invoiceNumber  String   @unique
-  customerName   String?
-  customerPhone  String?
-  customerGst    String?
-  subtotal       Float
-  discount       Float    @default(0)
-  totalGst       Float
-  grandTotal     Float
-  paymentMethod  String   @default("CASH") // CASH, CARD, UPI
-  items          Json     // [{ productId, name, price, qty, gst, total }]
-  createdAt      DateTime @default(now())
+model Bill {
+  id            String   @id @default(cuid())
+  billNumber    String   @unique
+  customerName  String?
+  customerPhone String?
+  items         Json     // [{ name, qty, price, discount, gstRate, total }]
+  subtotal      Float
+  discountAmt   Float    @default(0)
+  gstAmt        Float
+  grandTotal    Float
+  gstRate       Float    @default(18)
+  notes         String?
+  createdAt     DateTime @default(now())
 }
