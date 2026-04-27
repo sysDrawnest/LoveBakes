@@ -33,30 +33,6 @@ const Login = () => {
         } finally { setLoading(false); }
     };
 
-    // UPDATED: inp function now accepts hasButton parameter
-    const inp = (hasError, hasButton = false) => ({
-        width: '100%',
-        paddingLeft: 44,
-        paddingRight: hasButton ? 46 : 42, // Less padding if no button
-        paddingTop: 14,
-        paddingBottom: 14,
-        border: `1.5px solid ${hasError ? '#E85D75' : '#E8D0C4'}`,
-        borderRadius: 12,
-        fontSize: 14,
-        color: '#3B2A25',
-        fontFamily: "'DM Sans', sans-serif",
-        background: 'rgba(255,252,250,0.85)',
-        outline: 'none',
-        transition: 'all 0.2s',
-        boxSizing: 'border-box',
-        backdropFilter: 'blur(4px)',
-        backgroundImage: 'none',
-        backgroundRepeat: 'no-repeat',
-        WebkitAppearance: 'none',
-        MozAppearance: 'none',
-        appearance: 'none',
-    });
-
     const Field = ({ icon: Icon, label, error: fieldError, optional, children }) => (
         <div style={{ marginBottom: 18 }}>
             <label style={{
@@ -72,7 +48,7 @@ const Login = () => {
                 {label}
                 {optional && <span style={{ color: '#C9A27E', fontWeight: 400, textTransform: 'none', letterSpacing: 0, fontSize: 11 }}> (optional)</span>}
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="input-field-relative">
                 <Icon size={16} color={fieldError ? '#E85D75' : '#C9A27E'} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1 }} />
                 {children}
             </div>
@@ -211,35 +187,31 @@ const Login = () => {
                                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}
                             >
-                                {/* UPDATED: Added false parameter for no button */}
                                 <Field icon={User} label="Full Name" error={errors.name && 'Name is required'}>
-                                    <input {...register('name', { required: mode === 'register' })} placeholder="Your full name" style={inp(errors.name, false)} />
+                                    <input {...register('name', { required: mode === 'register' })} placeholder="Your full name" className={`auth-input ${errors.name ? 'has-error' : ''}`} />
                                 </Field>
-                                {/* UPDATED: Added false parameter for no button */}
                                 <Field icon={Phone} label="Phone" optional>
-                                    <input {...register('phone')} placeholder="+91 XXXXX XXXXX" style={inp(false, false)} />
+                                    <input {...register('phone')} placeholder="+91 XXXXX XXXXX" className="auth-input" />
                                 </Field>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    {/* UPDATED: Email field - false means no button */}
                     <Field icon={Mail} label="Email" error={errors.email && 'Valid email required'}>
                         <input
                             {...register('email', { required: true, pattern: /^\S+@\S+\.\S+$/ })}
                             type="email"
                             placeholder="you@email.com"
-                            style={inp(errors.email, false)}
+                            className={`auth-input ${errors.email ? 'has-error' : ''}`}
                         />
                     </Field>
 
-                    {/* UPDATED: Password field - true means has button (show/hide password) */}
                     <Field icon={Lock} label="Password" error={errors.password && 'Minimum 6 characters'}>
                         <input
                             {...register('password', { required: true, minLength: 6 })}
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Min. 6 characters"
-                            style={inp(errors.password, true)}
+                            className={`auth-input has-button ${errors.password ? 'has-error' : ''}`}
                         />
                         <button type="button" onClick={() => setShowPassword(v => !v)} style={{
                             position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',

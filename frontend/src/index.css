@@ -23,6 +23,58 @@ body {
 
 
 /* ─────────────────────────────────────────────────────────────
+   LoveBakes — Auth Input Styles (Robust against Extensions)
+   ───────────────────────────────────────────────────────────── */
+.auth-input {
+  width: 100% !important;
+  padding: 14px 42px 14px 44px !important;
+  border: 1.5px solid #E8D0C4 !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  color: #3B2A25 !important;
+  font-family: var(--font-sans) !important;
+  background-color: rgba(255, 252, 250, 0.85) !important;
+  background-image: none !important;
+  /* Blocks TempMail repeating icons */
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box !important;
+  backdrop-filter: blur(4px);
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: block !important;
+}
+
+.auth-input.has-error {
+  border-color: #E85D75 !important;
+}
+
+.auth-input.has-button {
+  padding-right: 46px !important;
+}
+
+/* Ensure wrapper divs injected by extensions don't shrink the input */
+.input-field-relative {
+  position: relative;
+  width: 100% !important;
+}
+
+.input-field-relative>div {
+  width: 100% !important;
+}
+
+/* Autofill fixes */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #FFF9F5 inset !important;
+  -webkit-text-fill-color: #3B2A25 !important;
+  border: 1.5px solid #E8D0C4 !important;
+  border-radius: 12px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
    LoveBakes — About Page Utility Styles
    ───────────────────────────────────────────────────────────── */
 
