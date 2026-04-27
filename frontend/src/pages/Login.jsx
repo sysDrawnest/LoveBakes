@@ -33,10 +33,11 @@ const Login = () => {
         } finally { setLoading(false); }
     };
 
-    const inp = (hasError) => ({
+    // UPDATED: inp function now accepts hasButton parameter
+    const inp = (hasError, hasButton = false) => ({
         width: '100%',
         paddingLeft: 44,
-        paddingRight: 46,
+        paddingRight: hasButton ? 46 : 42, // Less padding if no button
         paddingTop: 14,
         paddingBottom: 14,
         border: `1.5px solid ${hasError ? '#E85D75' : '#E8D0C4'}`,
@@ -49,7 +50,6 @@ const Login = () => {
         transition: 'all 0.2s',
         boxSizing: 'border-box',
         backdropFilter: 'blur(4px)',
-        // Normalize for consistent appearance across browsers
         backgroundImage: 'none',
         backgroundRepeat: 'no-repeat',
         WebkitAppearance: 'none',
@@ -211,31 +211,35 @@ const Login = () => {
                                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}
                             >
+                                {/* UPDATED: Added false parameter for no button */}
                                 <Field icon={User} label="Full Name" error={errors.name && 'Name is required'}>
-                                    <input {...register('name', { required: mode === 'register' })} placeholder="Your full name" style={inp(errors.name)} />
+                                    <input {...register('name', { required: mode === 'register' })} placeholder="Your full name" style={inp(errors.name, false)} />
                                 </Field>
+                                {/* UPDATED: Added false parameter for no button */}
                                 <Field icon={Phone} label="Phone" optional>
-                                    <input {...register('phone')} placeholder="+91 XXXXX XXXXX" style={inp(false)} />
+                                    <input {...register('phone')} placeholder="+91 XXXXX XXXXX" style={inp(false, false)} />
                                 </Field>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
+                    {/* UPDATED: Email field - false means no button */}
                     <Field icon={Mail} label="Email" error={errors.email && 'Valid email required'}>
                         <input
                             {...register('email', { required: true, pattern: /^\S+@\S+\.\S+$/ })}
                             type="email"
                             placeholder="you@email.com"
-                            style={inp(errors.email)}
+                            style={inp(errors.email, false)}
                         />
                     </Field>
 
+                    {/* UPDATED: Password field - true means has button (show/hide password) */}
                     <Field icon={Lock} label="Password" error={errors.password && 'Minimum 6 characters'}>
                         <input
                             {...register('password', { required: true, minLength: 6 })}
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Min. 6 characters"
-                            style={inp(errors.password)}
+                            style={inp(errors.password, true)}
                         />
                         <button type="button" onClick={() => setShowPassword(v => !v)} style={{
                             position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
