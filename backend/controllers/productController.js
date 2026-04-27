@@ -47,11 +47,19 @@ export const getProductById = asyncHandler(async (req, res) => {
 // @route   GET /api/products/featured
 // @access  Public
 export const getFeaturedProducts = asyncHandler(async (req, res) => {
+<<<<<<< HEAD
     // Prisma does not have $sample, so we query a random selection using PostgreSQL RAW
     // Then map it. (Make sure id maps to _id for frontend)
     const rawProducts = await prisma.$queryRaw`SELECT * FROM "Product" WHERE "isAvailable" = true ORDER BY RANDOM() LIMIT 4`;
 
     const products = rawProducts.map(p => ({ ...p, _id: p.id }));
+=======
+    // Fetch 4 random available products to show on the homepage
+    const products = await Product.aggregate([
+        { $match: { isAvailable: true } },
+        { $sample: { size: 4 } }
+    ]);
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
     res.json(products);
 });
 

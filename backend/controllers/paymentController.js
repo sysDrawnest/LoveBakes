@@ -1,7 +1,11 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import asyncHandler from '../utils/asyncHandler.js';
+<<<<<<< HEAD
 import prisma from '../config/prisma.js';
+=======
+import Order from '../models/Order.js';
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
 import { sendAdminWhatsAppNotification } from '../services/whatsappService.js';
 
@@ -56,6 +60,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
 
     if (isAuthentic) {
         // Payment is genuine
+<<<<<<< HEAD
         const orderExists = await prisma.order.findUnique({
             where: { id: orderId }
         });
@@ -82,6 +87,22 @@ export const verifyPayment = asyncHandler(async (req, res) => {
                 console.log(`Online Order notifications sent for order: ${backwardsCompatibleOrder._id}`);
             } catch (e) {
                 console.error('Notification failed for paid order:', backwardsCompatibleOrder._id);
+=======
+        const order = await Order.findById(orderId).populate('user', 'name email phone');
+        if (order) {
+            order.paymentStatus = 'paid';
+            order.razorpayOrderId = razorpay_order_id;
+            order.razorpayPaymentId = razorpay_payment_id;
+            await order.save();
+
+            // Notify Customer & Admin after successful payment
+            try {
+                await sendOrderConfirmationEmail(order.user.email, order.user.name, order);
+                await sendAdminWhatsAppNotification(order, order.user);
+                console.log(`Online Order notifications sent for order: ${order._id}`);
+            } catch (e) {
+                console.error('Notification failed for paid order:', order._id);
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
             }
 
             res.json({ message: 'Payment verified successfully', success: true });

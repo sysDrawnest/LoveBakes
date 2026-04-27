@@ -17,6 +17,7 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import About from './pages/About';
+<<<<<<< HEAD
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
@@ -24,6 +25,9 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminProductDetails from './pages/admin/AdminProductDetails';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
+=======
+import AdminDashboard from './pages/AdminDashboard';
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
 import Contact from './pages/Contact';
 
 function App() {
@@ -50,6 +54,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+<<<<<<< HEAD
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminLayout />}>
@@ -63,6 +68,9 @@ function App() {
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 
+=======
+                <Route path="/admin" element={<AdminDashboard />} />
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
                 <Route path="*" element={
                   <div className="text-center py-24">
                     <div className="text-7xl mb-4">🍰</div>

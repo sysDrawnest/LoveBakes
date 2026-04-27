@@ -37,13 +37,24 @@ export const createOrder = asyncHandler(async (req, res) => {
         include: { items: true, user: true }
     });
 
+<<<<<<< HEAD
+=======
+    // Send notifications ONLY for COD immediately. 
+    // Online orders will be notified after payment verification in paymentController.
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
     if (paymentMethod === 'cod') {
         try {
             await sendOrderConfirmationEmail(req.user.email, req.user.name, order);
             await sendAdminWhatsAppNotification(order, req.user);
+<<<<<<< HEAD
             console.log(`COD Order notifications sent for order: ${order.id}`);
         } catch (e) {
             console.error('Notification failed for order:', order.id);
+=======
+            console.log(`COD Order notifications sent for order: ${order._id}`);
+        } catch (e) {
+            console.error('Notification failed for order:', order._id);
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
             console.error(e);
         }
     }

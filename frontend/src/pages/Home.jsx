@@ -1,11 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star, Instagram, MapPin, MessageCircle, Phone } from 'lucide-react';
+<<<<<<< HEAD
 import heroImage from '../assets/hero image.png';
 import OrderNowSection from '../components/OrderNowSection';
 import WhyChooseUs from '../components/WhyChooseUs';
 import WhatsAppOrder from '../components/WhatsAppOrder';
 import ProductShowcase from '../components/ProductShowcase';
+=======
+import { useEffect, useState } from 'react';
+import { getFeaturedProductsApi } from '../api/api';
+import ProductCard from '../components/ProductCard';
+import heroImage from '../assets/hero image.png';
+import OrderNowSection from '../components/OrderNowSection';
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
 
 const TESTIMONIALS = [
     { name: 'Priya S.', review: 'The chocolate cake was absolutely divine! Every bite felt like a warm hug. Will order again!', rating: 5 },
@@ -25,6 +33,22 @@ const INSTAGRAM_POSTS = [
 const Home = () => {
     const navigate = useNavigate();
 
+<<<<<<< HEAD
+=======
+    useEffect(() => {
+        getFeaturedProductsApi()
+            .then(r => {
+                // The backend typically returns either an array directly or { success, products }
+                const products = Array.isArray(r.data) ? r.data : (r.data?.products || r.data?.data || []);
+                setFeatured(products);
+            })
+            .catch(() => {
+                // Ignore silent errors for now, skeleton will stay or use empty state
+                setFeatured([]);
+            });
+    }, []);
+
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
     return (
         <div className="w-full">
             {/* ── NEW HERO ─────────────────────────────────────── */}
@@ -77,6 +101,7 @@ const Home = () => {
                 <div className="relative w-full h-[45vh] overflow-hidden">
                     <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${heroImage}")` }}></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6F0] to-transparent opacity-60"></div>
+<<<<<<< HEAD
                 </div>
                 {/* Hero Text Content */}
                 <div className="flex-1 px-6 py-8 flex flex-col justify-center items-center text-center -mt-12 relative z-10 bg-[#FAF6F0] rounded-t-2xl">
@@ -108,6 +133,83 @@ const Home = () => {
 
             {/* ── ORDER NOW SECTION ────────────────────────── */}
             <OrderNowSection />
+=======
+                </div>
+                {/* Hero Text Content */}
+                <div className="flex-1 px-6 py-8 flex flex-col justify-center items-center text-center -mt-12 relative z-10 bg-[#FAF6F0] rounded-t-2xl">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E85D75]/10 text-[#E85D75] text-[11px] font-bold tracking-widest uppercase mb-5">
+                        <span className="material-symbols-outlined text-sm">stars</span>
+                        Premium Quality
+                    </div>
+                    <h1 className="text-[#3B2A25] text-4xl font-black leading-tight tracking-tight mb-4 font-serif">
+                        Love Bakes Delivered to Your Door
+                    </h1>
+                    <p className="text-[#4B5563] text-sm font-normal leading-relaxed mb-8 max-w-[300px]">
+                        Discover our curated collection of handcrafted cakes and pastries, baked daily with love.
+                    </p>
+                    <div className="flex flex-col w-full px-2 gap-3.5">
+                        <button onClick={() => navigate('/shop')} className="w-full py-4 bg-[#E85D75] text-white rounded-full font-bold text-[13px] tracking-widest uppercase shadow-lg shadow-[#E85D75]/30 flex items-center justify-center gap-2">
+                            SHOP ALL SWEETS
+                            <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => navigate('/about')} className="w-full py-4 bg-[#E85D75]/10 text-[#E85D75] rounded-full font-bold text-[13px] tracking-widest uppercase border border-[#E85D75]/20">
+                            OUR STORY
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+
+
+            {/* ── FEATURED CAKES ───────────────────────────── */}
+            <section className="max-w-7xl mx-auto px-6 py-20">
+                <div className="flex justify-between items-end mb-10">
+                    <div>
+                        <span className="text-sm font-semibold text-[#C9A27E] uppercase tracking-wider">Our Bestsellers</span>
+                        <h2 className="text-4xl font-bold text-[#3B2A25] mt-1">Featured Cakes</h2>
+                    </div>
+                    <Link to="/shop" className="flex items-center gap-1 text-[#3B2A25] font-semibold hover:gap-3 transition-all">
+                        View All <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {featured && featured.length > 0
+                        ? featured.slice(0, 4).map(p => <ProductCard key={p._id} product={p} />)
+                        : [1, 2, 3, 4].map(i => (
+                            <ProductCard key={`placeholder-${i}`} product={{
+                                _id: `placeholder-${i}`,
+                                name: "Artisan Chocolate Cake",
+                                category: "Signature Collection",
+                                description: "Decadent dark chocolate layers with a smooth ganache finish.",
+                                images: ["https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400"],
+                                sizes: [{ size: "1kg", price: 1200 }]
+                            }} />
+                        ))
+                    }
+                </div>
+            </section>
+
+            {/* ── ORDER NOW SECTION ────────────────────────── */}
+            <OrderNowSection />
+
+            {/* ── CUSTOM CAKE CTA ──────────────────────────── */}
+            <section className="mx-6 lg:mx-auto max-w-7xl px-0">
+                <div className="relative bg-[#3B2A25] rounded-[3rem] overflow-hidden p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="absolute inset-0 opacity-10">
+                        <img src="https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=1200" className="w-full h-full object-cover" alt="" />
+                    </div>
+                    <div className="relative z-10">
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Design Your Dream Cake</h2>
+                        <p className="text-[#C9A27E] text-lg max-w-lg">Choose every detail — flavor, size, frosting, toppings. We'll bake it exactly as you imagined.</p>
+                    </div>
+                    <div className="relative z-10 shrink-0">
+                        <Link to="/custom-cake" className="inline-flex items-center gap-2 bg-white text-[#E85D75] px-8 py-4 rounded-full text-lg font-bold hover:bg-[#C9A27E] transition-colors shadow-lg">
+                            Build My Cake <ArrowRight className="w-5 h-5" />
+                        </Link>
+                    </div>
+                </div>
+            </section>
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
 
             {/* ── INSTAGRAM GRID ───────────────────────────── */}
             <section className="max-w-7xl mx-auto px-6 py-20">

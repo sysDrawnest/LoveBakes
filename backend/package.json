@@ -27,8 +27,11 @@
     "nodemailer": "^8.0.1",
     "razorpay": "^2.9.6",
     "twilio": "^5.13.0"
+<<<<<<< HEAD
   },
   "devDependencies": {
     "prisma": "^5.22.0"
+=======
+>>>>>>> efde3d12d5492354106b7066d2592d0917893253
   }
 }
