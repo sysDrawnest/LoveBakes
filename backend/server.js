@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import connectDB from './config/db.js';
+import prisma from './config/prisma.js';
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
@@ -12,9 +12,19 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import customOrderRoutes from './routes/customOrderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+
 
 dotenv.config();
-connectDB();
+
+// Verify DB connection
+prisma.$connect()
+  .then(() => console.log('Prisma connected to PostgreSQL'))
+  .catch((err) => {
+    console.error('Prisma connection error:', err);
+    process.exit(1);
+  });
 
 const app = express();
 
@@ -35,6 +45,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/custom-orders', customOrderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/payment', paymentRoutes);
+
 
 app.get('/', (req, res) => res.json({ message: 'LoveBakes API Running 🍰' }));
 

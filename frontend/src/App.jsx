@@ -17,7 +17,14 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import About from './pages/About';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminProductDetails from './pages/admin/AdminProductDetails';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminSettings from './pages/admin/AdminSettings';
+import Contact from './pages/Contact';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -42,12 +49,25 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/contact" element={<Contact />} />
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="products/add" element={<AdminProductDetails />} />
+                  <Route path="products/edit/:id" element={<AdminProductDetails />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                </Route>
+
                 <Route path="*" element={
                   <div className="text-center py-24">
                     <div className="text-7xl mb-4">🍰</div>
-                    <h2 className="text-4xl font-bold text-[#4A332C] mb-4">Page Not Found</h2>
-                    <a href="/" className="text-[#C8B6A6] hover:text-[#4A332C]">← Back to Home</a>
+                    <h2 className="text-4xl font-bold text-[#3B2A25] mb-4">Page Not Found</h2>
+                    <a href="/" className="text-[#C9A27E] hover:text-[#3B2A25]">← Back to Home</a>
                   </div>
                 } />
               </Routes>

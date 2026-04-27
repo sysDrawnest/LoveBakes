@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 // Generate JWT Token
@@ -12,20 +13,26 @@ const generateToken = (id) => {
 // @access  Public
 export const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password, phone } = req.body;
-    const userExists = await User.findOne({ email });
+    const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
         res.status(400);
         throw new Error('User already exists');
     }
-    const user = await User.create({ name, email, password, phone });
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await prisma.user.create({
+        data: { name, email, password: hashedPassword, phone }
+    });
     if (user) {
         res.status(201).json({
-            _id: user._id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             phone: user.phone,
             role: user.role,
-            token: generateToken(user._id),
+            token: generateToken(user.id),
         });
     } else {
         res.status(400);
@@ -38,15 +45,16 @@ export const registerUser = asyncHandler(async (req, res) => {
 // @access  Public
 export const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (user && (await user.matchPassword(password))) {
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
         res.json({
-            _id: user._id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             phone: user.phone,
             role: user.role,
-            token: generateToken(user._id),
+            token: generateToken(user.id),
         });
     } else {
         res.status(401);
@@ -58,10 +66,11 @@ export const loginUser = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/profile
 // @access  Private
 export const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const userId = req.user.id || req.user._id;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
         res.json({
-            _id: user._id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             phone: user.phone,
@@ -78,24 +87,34 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 // @route   PUT /api/auth/profile
 // @access  Private
 export const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const userId = req.user.id || req.user._id;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
     if (user) {
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        user.phone = req.body.phone || user.phone;
-        user.address = req.body.address || user.address;
+        const dataToUpdate = {
+            name: req.body.name || user.name,
+            email: req.body.email || user.email,
+            phone: req.body.phone || user.phone,
+            address: req.body.address || user.address,
+        };
         if (req.body.password) {
-            user.password = req.body.password;
+            const salt = await bcrypt.genSalt(10);
+            dataToUpdate.password = await bcrypt.hash(req.body.password, salt);
         }
-        const updatedUser = await user.save();
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: dataToUpdate
+        });
+
         res.json({
-            _id: updatedUser._id,
+            _id: updatedUser.id,
             name: updatedUser.name,
             email: updatedUser.email,
             phone: updatedUser.phone,
             address: updatedUser.address,
             role: updatedUser.role,
-            token: generateToken(updatedUser._id),
+            token: generateToken(updatedUser.id),
         });
     } else {
         res.status(404);

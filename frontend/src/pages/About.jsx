@@ -1,69 +1,87 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import React from 'react';
+import CraftsmanshipGrid from '../components/CraftsmanshipGrid';
 
-const About = () => (
-    <div className="max-w-7xl mx-auto px-4">
-        {/* Hero */}
-        <section className="py-20 grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
-            <motion.div className="rounded-[3rem] overflow-hidden shadow-[0_20px_60px_rgba(74,51,44,0.15)] h-[500px]"
-                initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
-                <img
-                    src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&auto=format&fit=crop"
-                    alt="Baker in cozy kitchen"
-                    className="w-full h-full object-cover"
-                />
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
-                <span className="text-sm font-semibold text-[#C8B6A6] uppercase tracking-widest">Our Story</span>
-                <h1 className="text-5xl font-bold text-[#4A332C] leading-tight mt-3 mb-6">
-                    Started with<br />One Imperfect<br />Cake.
-                </h1>
-                <div className="space-y-4 text-[#4A332C]/75 text-lg leading-relaxed">
-                    <p>LoveBakes started when a boy tried to bake a cake for the girl he loved.</p>
-                    <p>He did not know cooking. He only knew love.</p>
-                    <p>From messy, flour-covered kitchen experiments — collapsed layers, uneven frosting, and burnt edges — came the first cake. Imperfect. But made with every ounce of feeling he had.</p>
-                    <p>She ate every crumb. And said it was the best cake she'd ever tasted.</p>
-                    <p className="font-semibold text-[#4A332C]">That small moment became LoveBakes.</p>
-                </div>
-                <Link to="/shop" className="inline-flex items-center gap-2 mt-8 bg-[#4A332C] text-white px-7 py-3.5 rounded-full font-semibold hover:bg-[#2C1A14] transition-colors">
-                    Shop Now <ArrowRight className="w-4 h-4" />
-                </Link>
-            </motion.div>
-        </section>
+const About = () => {
+ return (
+ <>
+ {/* Hero/About Section */}
+ <section className="px-6 md:px-20 py-12 md:py-24 max-w-7xl mx-auto">
+ <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+ {/* Left Side: Cinematic Image */}
+ <div className="relative group">
+ {/* Organic Shape Background Decor */}
+ <div className="absolute -top-10 -left-10 w-64 h-64 bg-brand-blush/20 organic-shape -z-10 flour-texture"></div>
+ <div className="absolute -bottom-8 -right-8 w-48 h-48 bg-brand-beige/30 organic-shape -z-10"></div>
+ 
+ <div className="relative rounded-xl overflow-hidden shadow-2xl transition-transform duration-500 group-hover:scale-[1.01]">
+ <div 
+ className="aspect-[4/5] bg-cover bg-center"
+ style={{ backgroundImage: `url('/src/assets/about.png')` }}
+ role="img"
+ aria-label="Young baker decorating cake with flour, brass utensils, and marigolds in warm sunlight"
+ ></div>
 
-        {/* Values */}
-        <section className="pb-20">
-            <h2 className="text-4xl font-bold text-[#4A332C] text-center mb-12">What We Stand For</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                    { icon: '❤️', title: 'Baked with Love', desc: 'Every cake is made by hand, with care and intention — never factory produced.' },
-                    { icon: '🌿', title: 'Fresh Ingredients', desc: 'We use only fresh, quality ingredients. No artificial preservatives, no shortcuts.' },
-                    { icon: '🎨', title: 'Custom Crafted', desc: 'Your vision, our expertise. We create cakes that tell your story.' },
-                ].map((v, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                        className="bg-white rounded-3xl p-8 text-center shadow-[0_8px_40px_rgba(74,51,44,0.06)]">
-                        <span className="text-4xl mb-4 block">{v.icon}</span>
-                        <h3 className="text-xl font-bold text-[#4A332C] mb-2">{v.title}</h3>
-                        <p className="text-[#4A332C]/70 text-sm leading-relaxed">{v.desc}</p>
-                    </motion.div>
-                ))}
-            </div>
-        </section>
+ {/* Overlay for luxury feel */}
+ <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent pointer-events-none"></div>
+ </div>
 
-        {/* Odisha Culture Band */}
-        <section className="bg-[#4A332C] rounded-[3rem] p-12 mb-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <div>
-                <h2 className="text-white text-4xl font-bold mb-4">Rooted in Odisha</h2>
-                <p className="text-[#C8B6A6] text-lg leading-relaxed">
-                    Born in the warmth of Bhubaneswar, our recipes carry the soul of Odia hospitality. From terracotta-colored kitchens to vibrant Sambalpuri celebrations — every LoveBakes creation carries home.
-                </p>
-            </div>
-            <div className="rounded-2xl overflow-hidden h-64">
-                <img src="https://images.unsplash.com/photo-1602081964546-b9a78d55e78c?w=600&auto=format&fit=crop" alt="Warm bakery" className="w-full h-full object-cover" />
-            </div>
-        </section>
-    </div>
-);
+ {/* Floating Element: Sambalpuri Fabric / Texture Note */}
+ <div className="absolute bottom-6 -left-4 bg-brand-cream p-4 rounded-lg shadow-lg max-w-[180px] hidden md:block">
+ <p className="text-xs italic text-brand-chocolate/70 ">
+ Crafted with heritage and Sambalpuri soul
+ </p>
+ <div className="mt-2 h-1 w-full bg-gradient-to-r from-brand-blush to-transparent"></div>
+ </div>
+ </div>
+
+ {/* Right Side: Content */}
+ <div className="flex flex-col gap-8">
+ <div className="space-y-4">
+ <span className="text-brand-chocolate/60 font-semibold tracking-widest text-xs uppercase">
+ Our Humble Beginnings
+ </span>
+ <h1 className="text-4xl md:text-6xl font-bold text-brand-chocolate serif-elegant leading-tight">
+ Baked With <span className="text-brand-blush italic">Love</span>
+ </h1>
+ <div className="w-20 h-1 bg-brand-blush/30 rounded-full"></div>
+ </div>
+
+ <div className="space-y-6">
+ <p className="text-lg md:text-xl text-brand-chocolate/80 leading-relaxed font-light">
+ LoveBakes started with a simple moment. A boy trying to bake a cake for the girl he loved. 
+ He didn't know recipes. He didn't know baking. But he knew love.
+ </p>
+ <p className="text-base text-brand-chocolate/60 leading-relaxed">
+ From messy flour-covered experiments came the first cake. That moment slowly turned into LoveBakes — 
+ a place where every dessert carries the same feeling. We believe that the secret ingredient isn't 
+ found in a pantry, but in the heart of the baker.
+ </p>
+ </div>
+
+ <div className="flex flex-col sm:flex-row gap-4 pt-4">
+ <button className="px-8 py-4 bg-brand-blush text-brand-dark rounded-lg font-bold shadow-lg shadow-brand-blush/30 hover:bg-brand-blush/80 transition-all flex items-center justify-center gap-2">
+ <span>Learn More</span>
+ <span className="material-symbols-outlined text-sm">arrow_forward</span>
+ </button>
+ <button className="px-8 py-4 bg-brand-beige/30 text-brand-chocolate border border-brand-blush/20 rounded-lg font-bold hover:bg-brand-beige/50 transition-all">
+ Our Menu
+ </button>
+ </div>
+
+ {/* Decorative Flour Dust Icon */}
+ <div className="flex items-center gap-3 pt-8 opacity-40">
+ <span className="material-symbols-outlined text-brand-blush animate-float">skillet</span>
+ <span className="material-symbols-outlined text-brand-blush animate-float" style={{ animationDelay: '0.5s' }}>bakery_dining</span>
+ <span className="material-symbols-outlined text-brand-blush animate-float" style={{ animationDelay: '1s' }}>egg_alt</span>
+ </div>
+ </div>
+ </div>
+ </section>
+
+ {/* Value Proposition Grid */}
+ <CraftsmanshipGrid />
+ </>
+ );
+};
 
 export default About;

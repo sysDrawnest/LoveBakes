@@ -1,6 +1,4 @@
-import Order from '../models/Order.js';
-import User from '../models/User.js';
-import Product from '../models/Product.js';
+import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 // @desc    Get analytics data
@@ -11,40 +9,54 @@ export const getAnalytics = asyncHandler(async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     const [totalOrders, todayOrders, totalUsers, totalProducts, revenueAgg] = await Promise.all([
-        Order.countDocuments(),
-        Order.countDocuments({ createdAt: { $gte: today } }),
-        User.countDocuments({ role: 'user' }),
-        Product.countDocuments({ isAvailable: true }),
-        Order.aggregate([
-            { $match: { orderStatus: { $ne: 'cancelled' } } },
-            { $group: { _id: null, total: { $sum: '$totalPrice' } } }
-        ]),
+        prisma.order.count(),
+        prisma.order.count({ where: { createdAt: { gte: today } } }),
+        prisma.user.count({ where: { role: 'user' } }),
+        prisma.product.count({ where: { isAvailable: true } }),
+        prisma.order.aggregate({
+            _sum: { totalPrice: true },
+            where: { orderStatus: { not: 'cancelled' } }
+        }),
     ]);
 
-    const totalRevenue = revenueAgg[0]?.total || 0;
+    const totalRevenue = revenueAgg._sum.totalPrice || 0;
 
     // Daily sales last 7 days
     const last7 = new Date();
     last7.setDate(last7.getDate() - 7);
-    const dailySales = await Order.aggregate([
-        { $match: { createdAt: { $gte: last7 }, orderStatus: { $ne: 'cancelled' } } },
-        {
-            $group: {
-                _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-                revenue: { $sum: '$totalPrice' },
-                count: { $sum: 1 },
-            }
-        },
-        { $sort: { _id: 1 } }
-    ]);
+
+    // In PostgreSQL, use TO_CHAR to format date. Prisma $queryRaw returns BigInt for count, so map it to Number.
+    const dailySalesRaw = await prisma.$queryRaw`
+        SELECT TO_CHAR("createdAt", 'YYYY-MM-DD') as "_id",
+               SUM("totalPrice") as "revenue",
+               COUNT(*) as "count"
+        FROM "Order"
+        WHERE "createdAt" >= ${last7} AND "orderStatus" != 'cancelled'
+        GROUP BY TO_CHAR("createdAt", 'YYYY-MM-DD')
+        ORDER BY TO_CHAR("createdAt", 'YYYY-MM-DD') ASC
+    `;
+
+    const dailySales = dailySalesRaw.map(d => ({
+        _id: d._id,
+        revenue: Number(d.revenue),
+        count: Number(d.count)
+    }));
 
     // Popular products (top 5 by order count)
-    const popularProducts = await Order.aggregate([
-        { $unwind: '$items' },
-        { $group: { _id: '$items.product', name: { $first: '$items.name' }, count: { $sum: '$items.quantity' } } },
-        { $sort: { count: -1 } },
-        { $limit: 5 }
-    ]);
+    const popularProductsRaw = await prisma.$queryRaw`
+        SELECT "productId" as "_id", p."name" as "name", SUM("quantity") as "count"
+        FROM "OrderItem" oi
+        JOIN "Product" p ON p."id" = oi."productId"
+        GROUP BY "productId", p."name"
+        ORDER BY "count" DESC
+        LIMIT 5
+    `;
+
+    const popularProducts = popularProductsRaw.map(p => ({
+        _id: p._id,
+        name: p.name,
+        count: Number(p.count)
+    }));
 
     res.json({ totalOrders, todayOrders, totalUsers, totalProducts, totalRevenue, dailySales, popularProducts });
 });
@@ -53,6 +65,21 @@ export const getAnalytics = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/users
 // @access  Private/Admin
 export const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
-    res.json(users);
+    // Select all fields except password
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            address: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true
+        },
+        orderBy: { createdAt: 'desc' }
+    });
+
+    // Map id to _id
+    res.json(users.map(u => ({ ...u, _id: u.id })));
 });

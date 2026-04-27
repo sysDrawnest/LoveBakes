@@ -46,4 +46,11 @@ export const approveCustomOrderApi = (id, data) => api.put(`/custom-orders/${id}
 export const getAnalyticsApi = () => api.get('/admin/analytics');
 export const getAllUsersApi = () => api.get('/admin/users');
 
+// Contact
+export const sendMessageApi = (data) => api.post('/contact', data);
+
+// Payment
+export const createRazorpayOrderApi = (data) => api.post('/payment/create-order', data);
+export const verifyPaymentApi = (data) => api.post('/payment/verify', data);
+
 export default api;

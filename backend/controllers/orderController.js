@@ -1,6 +1,7 @@
-import Order from '../models/Order.js';
+import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
+import { sendAdminWhatsAppNotification } from '../services/whatsappService.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -10,38 +11,70 @@ export const createOrder = asyncHandler(async (req, res) => {
     if (!items || items.length === 0) {
         res.status(400); throw new Error('No order items');
     }
-    const order = await Order.create({
-        user: req.user._id,
-        items,
-        deliveryAddress,
-        deliveryDate,
-        deliveryTime,
-        paymentMethod,
-        totalPrice,
+
+    // Convert Mongoose incoming models to Prisma expected relational format
+    const orderItemsCreate = items.map(item => ({
+        productId: item.product,
+        size: item.size || null,
+        quantity: item.quantity,
+        price: item.price,
+        message: item.message || null,
+        customizations: item.customizations || {},
+    }));
+
+    const order = await prisma.order.create({
+        data: {
+            userId: req.user.id || req.user._id,
+            totalPrice,
+            deliveryAddress: deliveryAddress, // JSON field
+            deliveryDate: new Date(deliveryDate),
+            deliveryTime,
+            paymentMethod,
+            items: {
+                create: orderItemsCreate
+            }
+        },
+        include: { items: true, user: true }
     });
 
-    // Send confirmation email (best effort)
-    try {
-        await sendOrderConfirmationEmail(req.user.email, req.user.name, order);
-    } catch (e) { console.log('Email error:', e.message); }
+    if (paymentMethod === 'cod') {
+        try {
+            await sendOrderConfirmationEmail(req.user.email, req.user.name, order);
+            await sendAdminWhatsAppNotification(order, req.user);
+            console.log(`COD Order notifications sent for order: ${order.id}`);
+        } catch (e) {
+            console.error('Notification failed for order:', order.id);
+            console.error(e);
+        }
+    }
 
-    res.status(201).json(order);
+    res.status(201).json({ ...order, _id: order.id });
 });
 
 // @desc    Get logged in user's orders
 // @route   GET /api/orders/myorders
 // @access  Private
 export const getMyOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-    res.json(orders);
+    let orders = await prisma.order.findMany({
+        where: { userId: req.user.id || req.user._id },
+        orderBy: { createdAt: 'desc' },
+        include: { items: true }
+    });
+    res.json(orders.map(o => ({ ...o, _id: o.id })));
 });
 
 // @desc    Get single order by ID
 // @route   GET /api/orders/:id
 // @access  Private
 export const getOrderById = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate('user', 'name email phone');
-    if (order) res.json(order);
+    const order = await prisma.order.findUnique({
+        where: { id: req.params.id },
+        include: { user: { select: { id: true, name: true, email: true, phone: true } }, items: true }
+    });
+    if (order) {
+        if (order.user) order.user._id = order.user.id;
+        res.json({ ...order, _id: order.id });
+    }
     else { res.status(404); throw new Error('Order not found'); }
 });
 
@@ -50,13 +83,21 @@ export const getOrderById = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 export const getAllOrders = asyncHandler(async (req, res) => {
     const { status, page = 1, limit = 20 } = req.query;
-    const query = status ? { orderStatus: status } : {};
-    const count = await Order.countDocuments(query);
-    const orders = await Order.find(query)
-        .populate('user', 'name email phone')
-        .sort({ createdAt: -1 })
-        .limit(Number(limit))
-        .skip(Number(limit) * (Number(page) - 1));
+    const whereClause = status ? { orderStatus: status } : {};
+
+    const count = await prisma.order.count({ where: whereClause });
+    let orders = await prisma.order.findMany({
+        where: whereClause,
+        include: { user: { select: { id: true, name: true, email: true, phone: true } }, items: true },
+        orderBy: { createdAt: 'desc' },
+        take: Number(limit),
+        skip: Number(limit) * (Number(page) - 1)
+    });
+
+    orders = orders.map(order => {
+        if (order.user) order.user._id = order.user.id;
+        return { ...order, _id: order.id };
+    });
     res.json({ orders, total: count });
 });
 
@@ -64,13 +105,23 @@ export const getAllOrders = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/status
 // @access  Private/Admin
 export const updateOrderStatus = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate('user', 'name email');
-    if (order) {
-        order.orderStatus = req.body.orderStatus || order.orderStatus;
+    const orderExists = await prisma.order.findUnique({ where: { id: req.params.id } });
+    if (orderExists) {
+        let paymentStatus = orderExists.paymentStatus;
         if (req.body.orderStatus === 'delivered') {
-            order.paymentStatus = 'paid';
+            paymentStatus = 'paid';
         }
-        const updated = await order.save();
-        res.json(updated);
+
+        const updated = await prisma.order.update({
+            where: { id: req.params.id },
+            data: {
+                orderStatus: req.body.orderStatus || orderExists.orderStatus,
+                paymentStatus
+            },
+            include: { user: { select: { id: true, name: true, email: true } }, items: true }
+        });
+
+        if (updated.user) updated.user._id = updated.user.id;
+        res.json({ ...updated, _id: updated.id });
     } else { res.status(404); throw new Error('Order not found'); }
 });

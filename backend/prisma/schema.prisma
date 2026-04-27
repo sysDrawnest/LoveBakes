@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  address   Json?    // { street, city, state, zip }
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders       Order[]
+  customOrders CustomOrder[]
+  reviews      Review[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String
+  images      String[]
+  sizes       Json?    // [{ size: "500g", price: 500 }]
+  flavors     String[]
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems  OrderItem[]
+  reviews     Review[]
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  totalPrice       Float
+  deliveryAddress  Json     // { name, phone, street, city, state, zip }
+  deliveryDate     DateTime
+  deliveryTime     String
+  paymentMethod    String
+  paymentStatus    String   @default("pending")
+  orderStatus      String   @default("pending")
+  razorpayOrderId  String?
+  razorpayPaymentId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id             String  @id @default(uuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product @relation(fields: [productId], references: [id])
+  size           String?
+  quantity       Int
+  price          Float
+  message        String?
+  customizations Json?
+}
+
+model CustomOrder {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+  flavor             String?
+  size               String?
+  shape              String?
+  frosting           String?
+  icingColor         String?
+  toppings           String[]
+  message            String?
+  referenceImage     String?
+  deliveryDate       DateTime
+  specialInstructions String?
+  status             String   @default("pending")
+  quotedPrice        Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
