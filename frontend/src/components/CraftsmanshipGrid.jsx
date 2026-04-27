@@ -26,7 +26,7 @@ const CraftsmanshipGrid = () => {
     ];
 
     return (
-        <section className="bg-surface py-20 px-gutter relative overflow-hidden">
+        <section className="relative min-h-screen py-[80px] px-[32px] bg-surface font-body-md text-on-surface antialiased overflow-x-hidden">
             {/* Subtle Organic Background Decor */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 z-0">
                 <div className="absolute top-20 -left-20 w-96 h-96 bg-secondary-container rounded-full blur-[100px]"></div>
@@ -35,42 +35,36 @@ const CraftsmanshipGrid = () => {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header Section: Magazine Style */}
-                <div className="text-center mb-xl">
-                    <div className="inline-flex items-center gap-4 mb-base">
+                <div className="text-center mb-[80px]">
+                    <div className="inline-flex items-center gap-4 mb-2">
                         <div className="h-[1px] w-12 bg-[#C9A27E]/40"></div>
-                        <span className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">
-                            The Art of Baking
-                        </span>
+                        <span className="font-label-sm text-label-sm uppercase tracking-widest text-secondary">The Art of Baking</span>
                         <div className="h-[1px] w-12 bg-[#C9A27E]/40"></div>
                     </div>
-                    <h1 className="font-display-xl text-display-xl text-on-surface mb-md font-bold">
-                        Our Craftsmanship
-                    </h1>
+                    <h1 className="font-display-xl text-display-xl text-on-surface mb-3">Our Craftsmanship</h1>
                     <p className="font-accent-quote text-accent-quote text-on-surface-variant max-w-2xl mx-auto italic">
                         "Every bite is a love letter, crafted with patience and the finest ingredients."
                     </p>
                 </div>
 
                 {/* Craftsmanship Grid: Asymmetric/Editorial Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-                    {/* Feature Card 1: Premium Ingredients - Horizontal with image on left */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+                    {/* Feature Card 1: Premium Ingredients - Horizontal Left Layout */}
                     <div className="md:col-span-7 group">
                         <div className="glass-card cinematic-shadow rounded-xl border border-[#C9A27E]/20 overflow-hidden transition-all duration-500 hover:-translate-y-2">
                             <div className="flex flex-col md:flex-row h-full">
                                 <div className="w-full md:w-1/2 relative min-h-[300px]">
                                     <img
                                         className="absolute inset-0 w-full h-full object-cover"
-                                        alt="Close-up of premium dark chocolate chunks and organic raspberries on a marble surface with dramatic sunlight"
                                         src={craftsmanshipItems[0].image}
+                                        alt="Close-up of premium dark chocolate chunks and organic raspberries on a marble surface with dramatic sunlight"
                                     />
                                 </div>
-                                <div className="w-full md:w-1/2 p-lg flex flex-col justify-center">
-                                    <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-md transition-transform group-hover:scale-110 duration-300">
+                                <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-white/20">
+                                    <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-3 transition-transform group-hover:scale-110 duration-300">
                                         {craftsmanshipItems[0].icon}
                                     </span>
-                                    <h3 className="font-headline-md text-headline-md text-on-surface mb-sm font-semibold">
-                                        {craftsmanshipItems[0].title}
-                                    </h3>
+                                    <h3 className="font-headline-md text-headline-md text-on-surface mb-2">{craftsmanshipItems[0].title}</h3>
                                     <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                                         {craftsmanshipItems[0].description}
                                     </p>
@@ -79,49 +73,45 @@ const CraftsmanshipGrid = () => {
                         </div>
                     </div>
 
-                    {/* Feature Card 2: Handcrafted - Vertical/Tall layout */}
+                    {/* Feature Card 2: Handcrafted - Vertical Layout */}
                     <div className="md:col-span-5 group">
-                        <div className="glass-card cinematic-shadow rounded-xl border border-[#C9A27E]/20 p-lg h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2">
+                        <div className="glass-card cinematic-shadow rounded-xl border border-[#C9A27E]/20 p-6 md:p-8 h-full flex flex-col justify-between transition-all duration-500 hover:-translate-y-2">
                             <div>
-                                <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-md transition-transform group-hover:rotate-12 duration-300">
+                                <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-3 transition-transform group-hover:rotate-12 duration-300">
                                     {craftsmanshipItems[1].icon}
                                 </span>
-                                <h3 className="font-headline-md text-headline-md text-on-surface mb-sm font-semibold">
-                                    {craftsmanshipItems[1].title}
-                                </h3>
-                                <p className="font-body-md text-body-md text-on-surface-variant mb-lg leading-relaxed">
+                                <h3 className="font-headline-md text-headline-md text-on-surface mb-2">{craftsmanshipItems[1].title}</h3>
+                                <p className="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
                                     {craftsmanshipItems[1].description}
                                 </p>
                             </div>
                             <div className="rounded-lg overflow-hidden h-64 mt-auto">
                                 <img
                                     className="w-full h-full object-cover"
-                                    alt="Artisanal baker hands gently dusting a tiered cake with powdered sugar, soft golden hour lighting, cinematic focus"
                                     src={craftsmanshipItems[1].image}
+                                    alt="Artisanal baker hands gently dusting a tiered cake with powdered sugar, soft golden hour lighting, cinematic focus"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {/* Feature Card 3: Baked Fresh - Horizontal with image on right */}
-                    <div className="md:col-span-12 group mt-md">
+                    {/* Feature Card 3: Baked Fresh - Horizontal Right Layout */}
+                    <div className="md:col-span-12 group mt-4">
                         <div className="glass-card cinematic-shadow rounded-xl border border-[#C9A27E]/20 overflow-hidden transition-all duration-500 hover:-translate-y-2">
                             <div className="flex flex-col md:flex-row-reverse">
                                 <div className="w-full md:w-3/5 h-80 relative">
                                     <img
                                         className="absolute inset-0 w-full h-full object-cover"
-                                        alt="Row of freshly baked golden croissants and muffins cooling on a wire rack in a sunlit patisserie kitchen"
                                         src={craftsmanshipItems[2].image}
+                                        alt="Row of freshly baked golden croissants and muffins cooling on a wire rack in a sunlit patisserie kitchen"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-r from-surface/80 to-transparent md:block hidden"></div>
                                 </div>
-                                <div className="w-full md:w-2/5 p-lg flex flex-col justify-center bg-white/20">
-                                    <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-md transition-transform group-hover:scale-95 duration-300">
+                                <div className="w-full md:w-2/5 p-6 md:p-8 flex flex-col justify-center bg-white/20">
+                                    <span className="material-symbols-outlined text-[#E85D75] text-5xl mb-3 transition-transform group-hover:scale-95 duration-300">
                                         {craftsmanshipItems[2].icon}
                                     </span>
-                                    <h3 className="font-headline-md text-headline-md text-on-surface mb-sm font-semibold">
-                                        {craftsmanshipItems[2].title}
-                                    </h3>
+                                    <h3 className="font-headline-md text-headline-md text-on-surface mb-2">{craftsmanshipItems[2].title}</h3>
                                     <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                                         {craftsmanshipItems[2].description}
                                     </p>
@@ -132,14 +122,13 @@ const CraftsmanshipGrid = () => {
                 </div>
 
                 {/* Call to Action Decor */}
-                <div className="mt-xl text-center">
-                    <button className="px-lg py-md bg-[#E85D75] text-white rounded-xl font-label-sm text-label-sm uppercase tracking-widest cinematic-shadow hover:bg-primary-container transition-all hover:scale-105 active:scale-95">
+                <div className="mt-16 text-center">
+                    <button className="px-8 py-3 bg-[#E85D75] text-white rounded-xl font-label-sm text-label-sm uppercase tracking-widest cinematic-shadow hover:bg-primary-container transition-all hover:scale-105 active:scale-95">
                         Discover Our Collections
                     </button>
                 </div>
             </div>
 
-            {/* Global styles for custom classes */}
             <style jsx>{`
         .glass-card {
           background: rgba(255, 255, 255, 0.6);
@@ -148,6 +137,39 @@ const CraftsmanshipGrid = () => {
         }
         .cinematic-shadow {
           box-shadow: 0 10px 40px -15px rgba(212, 112, 90, 0.15);
+        }
+        /* Typography system styles */
+        .font-label-sm {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          line-height: 20px;
+          letter-spacing: 0.05em;
+          font-weight: 500;
+        }
+        .font-headline-md {
+          font-family: 'Playfair Display', serif;
+          font-size: 32px;
+          line-height: 40px;
+          font-weight: 500;
+        }
+        .font-display-xl {
+          font-family: 'Playfair Display', serif;
+          font-size: 64px;
+          line-height: 72px;
+          letter-spacing: -0.02em;
+          font-weight: 700;
+        }
+        .font-body-md {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 16px;
+          line-height: 24px;
+          font-weight: 400;
+        }
+        .font-accent-quote {
+          font-family: 'Playfair Display', serif;
+          font-size: 20px;
+          line-height: 30px;
+          font-weight: 400;
         }
       `}</style>
         </section>
