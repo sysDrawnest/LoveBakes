@@ -10,7 +10,8 @@ import {
     Settings,
     LogOut,
     Cake,
-    PlusCircle
+    PlusCircle,
+    Receipt
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,6 +23,7 @@ const TopNav = () => {
         { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
         { name: 'Inventory', icon: Package, path: '/admin/products' },
         { name: 'Sales', icon: ShoppingCart, path: '/admin/orders' },
+        { name: 'Billing', icon: Receipt, path: '/admin/billing' },
         { name: 'Customers', icon: Users, path: '/admin/users' },
         { name: 'Settings', icon: Settings, path: '/admin/settings' },
     ];
