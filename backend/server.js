@@ -14,6 +14,7 @@ import customOrderRoutes from './routes/customOrderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import billingRoutes from './routes/billingRoutes.js';
 
 
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/api/custom-orders', customOrderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/billing', billingRoutes);
 
 
 app.get('/', (req, res) => res.json({ message: 'LoveBakes API Running 🍰' }));

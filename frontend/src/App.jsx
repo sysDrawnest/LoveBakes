@@ -24,6 +24,7 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminProductDetails from './pages/admin/AdminProductDetails';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
+import Billing from './pages/admin/Billing';
 import Contact from './pages/Contact';
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
                   <Route path="products/edit/:id" element={<AdminProductDetails />} />
                   <Route path="orders" element={<AdminOrders />} />
                   <Route path="users" element={<AdminUsers />} />
+                  <Route path="billing" element={<Billing />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 

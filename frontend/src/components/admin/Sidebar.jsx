@@ -8,7 +8,8 @@ import {
     Settings,
     LogOut,
     PlusCircle,
-    Cake
+    Cake,
+    ReceiptText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -18,6 +19,7 @@ const Sidebar = () => {
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
         { name: 'Inventory', icon: Package, path: '/admin/products' },
+        { name: 'Billing', icon: ReceiptText, path: '/admin/billing' },
         { name: 'Sales', icon: ShoppingCart, path: '/admin/orders' },
         { name: 'Customers', icon: Users, path: '/admin/users' },
         { name: 'Settings', icon: Settings, path: '/admin/settings' },
