@@ -8,7 +8,7 @@ This project powers the digital storefront of the brand, allowing customers to e
 
 * **Frontend:** React, Tailwind CSS
 * **Backend:** Node.js, Express.js
-* **Database:** MongoDB Atlas
+* **Database:** Supabase
 * **Authentication:** JWT
 * **Other Integrations:** Email notifications, WhatsApp order alerts, payment gateway
 
