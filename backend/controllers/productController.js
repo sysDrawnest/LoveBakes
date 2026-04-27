@@ -28,11 +28,15 @@ export const getProductById = asyncHandler(async (req, res) => {
     else { res.status(404); throw new Error('Product not found'); }
 });
 
-// @desc    Get featured products
+// @desc    Get featured products (random selection of available products)
 // @route   GET /api/products/featured
 // @access  Public
 export const getFeaturedProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({ isFeatured: true, isAvailable: true }).limit(6);
+    // Fetch 4 random available products to show on the homepage
+    const products = await Product.aggregate([
+        { $match: { isAvailable: true } },
+        { $sample: { size: 4 } }
+    ]);
     res.json(products);
 });
 

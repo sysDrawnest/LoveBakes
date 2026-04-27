@@ -1,6 +1,7 @@
 import Order from '../models/Order.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
+import { sendAdminWhatsAppNotification } from '../services/whatsappService.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -20,10 +21,18 @@ export const createOrder = asyncHandler(async (req, res) => {
         totalPrice,
     });
 
-    // Send confirmation email (best effort)
-    try {
-        await sendOrderConfirmationEmail(req.user.email, req.user.name, order);
-    } catch (e) { console.log('Email error:', e.message); }
+    // Send notifications ONLY for COD immediately. 
+    // Online orders will be notified after payment verification in paymentController.
+    if (paymentMethod === 'cod') {
+        try {
+            await sendOrderConfirmationEmail(req.user.email, req.user.name, order);
+            await sendAdminWhatsAppNotification(order, req.user);
+            console.log(`COD Order notifications sent for order: ${order._id}`);
+        } catch (e) {
+            console.error('Notification failed for order:', order._id);
+            console.error(e);
+        }
+    }
 
     res.status(201).json(order);
 });

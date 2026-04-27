@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import Contact from './pages/Contact';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -42,12 +43,13 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="*" element={
                   <div className="text-center py-24">
                     <div className="text-7xl mb-4">🍰</div>
-                    <h2 className="text-4xl font-bold text-[#4A332C] mb-4">Page Not Found</h2>
-                    <a href="/" className="text-[#C8B6A6] hover:text-[#4A332C]">← Back to Home</a>
+                    <h2 className="text-4xl font-bold text-[#3B2A25] mb-4">Page Not Found</h2>
+                    <a href="/" className="text-[#C9A27E] hover:text-[#3B2A25]">← Back to Home</a>
                   </div>
                 } />
               </Routes>
