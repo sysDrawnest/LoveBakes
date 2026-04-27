@@ -329,6 +329,7 @@ const Login = () => {
             }
             navigate('/');
         } catch (e) {
+            console.error('Auth Error:', e);
             setError(e.response?.data?.message || 'Something went wrong. Please try again.');
         } finally { setLoading(false); }
     };
