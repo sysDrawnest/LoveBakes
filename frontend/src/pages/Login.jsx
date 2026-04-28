@@ -6,11 +6,11 @@ import { useAuth } from '../context/AuthContext';
 import heroImage from '../assets/login background.png';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight } from 'lucide-react';
 
-const Login = () => {
+const Login = ({ initialMode = 'login' }) => {
     const { login, register: registerUser } = useAuth();
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [mode, setMode] = useState('login');
+    const [mode, setMode] = useState(initialMode);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
